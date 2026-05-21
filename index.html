@@ -1,0 +1,3319 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="auto-automation — Intelligence Unbound. A cinematic visual intelligence platform."/>
+<meta property="og:title" content="Lumina Vision — auto-automation"/>
+<meta property="og:description" content="Intelligence Unbound. A cinematic visual intelligence platform."/>
+<title>Lumina Vision — auto-automation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ═══════════════════════════════════════════════
+   ROOT & RESET
+═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --pad: 70px;
+  --blue: #3b82f6;
+  --purple: #a855f7;
+  --pink: #ec4899;
+  --peach: #f8a170;
+  --yellow: #eab308;
+
+  /* Dark theme */
+  --bg: #000;
+  --bg-section: #080808;
+  --bg-alt: #0d0d0d;
+  --surface: rgba(255,255,255,0.05);
+  --surface-hover: rgba(255,255,255,0.09);
+  --border: rgba(255,255,255,0.08);
+  --border-hover: rgba(255,255,255,0.2);
+  --text: #ffffff;
+  --text-muted: rgba(255,255,255,0.5);
+  --text-dim: rgba(255,255,255,0.25);
+  --nav-bg: transparent;
+  --nav-scrolled: rgba(0,0,0,0.75);
+  --card-bg: rgba(255,255,255,0.04);
+  --input-bg: rgba(255,255,255,0.06);
+}
+
+[data-theme="light"] {
+  --bg: #f4f4f2;
+  --bg-section: #eeeeec;
+  --bg-alt: #e8e8e6;
+  --surface: rgba(0,0,0,0.04);
+  --surface-hover: rgba(0,0,0,0.08);
+  --border: rgba(0,0,0,0.08);
+  --border-hover: rgba(0,0,0,0.2);
+  --text: #0a0a0a;
+  --text-muted: rgba(0,0,0,0.5);
+  --text-dim: rgba(0,0,0,0.25);
+  --nav-bg: transparent;
+  --nav-scrolled: rgba(244,244,242,0.85);
+  --card-bg: rgba(0,0,0,0.03);
+  --input-bg: rgba(0,0,0,0.05);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  cursor: none;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* ═══════════════════════════════════════════════
+   FEATURE 1: CUSTOM CURSOR
+═══════════════════════════════════════════════ */
+#cursor-dot {
+  position: fixed;
+  width: 8px; height: 8px;
+  background: var(--blue);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s, width 0.2s, height 0.2s, opacity 0.2s;
+  box-shadow: 0 0 10px var(--blue), 0 0 20px rgba(59,130,246,0.4);
+}
+#cursor-ring {
+  position: fixed;
+  width: 32px; height: 32px;
+  border: 1.5px solid rgba(59,130,246,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.12s ease-out, width 0.25s, height 0.25s, border-color 0.25s;
+}
+body.cursor-hover #cursor-dot { width: 12px; height: 12px; }
+body.cursor-hover #cursor-ring { width: 48px; height: 48px; border-color: var(--blue); }
+
+/* ═══════════════════════════════════════════════
+   FEATURE 2: SCROLL PROGRESS BAR
+═══════════════════════════════════════════════ */
+#scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(to right, var(--blue), var(--purple), var(--pink));
+  z-index: 99997;
+  transition: width 0.1s linear;
+}
+
+/* ═══════════════════════════════════════════════
+   FEATURE 3: NAVIGATION (Enhanced)
+═══════════════════════════════════════════════ */
+#main-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 24px var(--pad);
+  background: var(--nav-bg);
+  transition: background 0.4s ease, backdrop-filter 0.4s ease, padding 0.3s ease, border-bottom 0.4s;
+  border-bottom: 1px solid transparent;
+}
+#main-nav.scrolled {
+  background: var(--nav-scrolled);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 16px var(--pad);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  display: flex; align-items: center; gap: 11px;
+  text-decoration: none; flex-shrink: 0;
+}
+.logo-icon {
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(59,130,246,0.7);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 12px rgba(59,130,246,0.45), inset 0 0 8px rgba(59,130,246,0.15);
+  background: rgba(59,130,246,0.08);
+}
+.logo-icon svg { filter: drop-shadow(0 0 4px #3b82f6); }
+.logo-text {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5em;
+  color: var(--text);
+}
+
+.nav-links {
+  display: flex; align-items: center; gap: 32px;
+  margin-left: auto; margin-right: 32px;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 0.85rem; font-weight: 400;
+  color: var(--text-muted); text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  transition: color 0.25s;
+  position: relative; padding-bottom: 2px;
+}
+/* FEATURE 4: Active nav link dot indicator */
+.nav-links a::after {
+  content: '';
+  position: absolute; bottom: -4px; left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--blue);
+  transition: transform 0.25s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--text); }
+.nav-links a:hover::after, .nav-links a.active::after { transform: translateX(-50%) scaleX(1); }
+
+.nav-right { display: flex; align-items: center; gap: 12px; }
+
+/* FEATURE 5: Dark/Light toggle */
+.theme-toggle {
+  width: 42px; height: 24px;
+  border-radius: 999px;
+  border: 1px solid var(--border-hover);
+  background: var(--surface);
+  cursor: pointer; position: relative;
+  transition: background 0.3s;
+}
+.theme-toggle-knob {
+  position: absolute; top: 3px; left: 3px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--blue);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+[data-theme="light"] .theme-toggle-knob { transform: translateX(18px); }
+.theme-toggle-icon {
+  position: absolute; top: 50%; right: 5px;
+  transform: translateY(-50%);
+  font-size: 10px; line-height: 1;
+  transition: opacity 0.3s;
+}
+[data-theme="light"] .theme-toggle-icon { opacity: 0; }
+
+/* Play button */
+.play-btn {
+  width: 52px; height: 52px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.07);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.25s, border-color 0.25s;
+  flex-shrink: 0;
+}
+.play-btn:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.45); }
+
+/* FEATURE 6: Hamburger (mobile) */
+.hamburger {
+  display: none; flex-direction: column; gap: 5px;
+  cursor: pointer; padding: 4px; margin-left: 12px;
+}
+.hamburger span {
+  display: block; width: 22px; height: 2px;
+  background: var(--text); border-radius: 2px;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile drawer */
+.mobile-nav {
+  position: fixed; top: 0; right: -100%;
+  width: min(320px, 85vw); height: 100vh;
+  background: rgba(0,0,0,0.95);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border-left: 1px solid var(--border);
+  z-index: 999;
+  display: flex; flex-direction: column;
+  padding: 90px 40px 40px;
+  transition: right 0.4s cubic-bezier(0.77,0,0.175,1);
+}
+.mobile-nav.open { right: 0; }
+.mobile-nav a {
+  font-size: 2rem; font-weight: 700;
+  color: var(--text-muted); text-decoration: none;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  transition: color 0.2s, padding-left 0.2s;
+}
+.mobile-nav a:hover { color: var(--text); padding-left: 8px; }
+.mobile-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 998;
+}
+.mobile-overlay.open { display: block; }
+
+/* ═══════════════════════════════════════════════
+   HERO SECTION
+═══════════════════════════════════════════════ */
+#home {
+  position: relative; width: 100vw; height: 100vh;
+  overflow: hidden; display: flex; flex-direction: column;
+}
+
+.bg-video-wrap {
+  position: absolute; inset: 0; z-index: 0;
+  transform-origin: right center;
+  transform: scaleX(1.3) scaleY(1.3);
+}
+.bg-video-wrap video {
+  position: absolute; top: 0; right: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: right center;
+  filter: brightness(1.1) contrast(1.1);
+}
+[data-theme="light"] .bg-video-wrap video { filter: brightness(0.9) contrast(1.05) saturate(0.7); }
+
+.text-protect {
+  position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 30%, rgba(0,0,0,0) 85%);
+  pointer-events: none;
+}
+
+/* FEATURE 7: Staggered load animation */
+.hero-content {
+  position: relative; z-index: 10;
+  flex: 1; display: flex; flex-direction: column;
+  justify-content: center;
+  padding: 0 var(--pad);
+  transform: translateY(-12%);
+  margin-top: 80px;
+}
+
+.hero-tag, .hero-heading, .hero-sub, .orbital-btn-wrap, .scroll-indicator {
+  opacity: 0; animation: fadeUp 0.8s ease forwards;
+}
+.hero-tag    { animation-delay: 0.2s; }
+.hero-heading { animation-delay: 0.4s; }
+.hero-sub    { animation-delay: 0.6s; }
+.orbital-btn-wrap { animation-delay: 0.8s; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 999px; padding: 6px 14px;
+  font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.4em;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 12px; width: fit-content;
+  backdrop-filter: blur(8px);
+}
+.hero-tag .dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--blue);
+  box-shadow: 0 0 6px var(--blue);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.7); }
+}
+
+.hero-heading {
+  font-size: clamp(48px, 6vw, 80px);
+  font-weight: 800; line-height: 1.0;
+  letter-spacing: -0.03em; color: #fff;
+  margin-bottom: 16px;
+}
+.hero-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px; font-weight: 300; line-height: 1.65;
+  color: rgba(255,255,255,0.6);
+  max-width: 430px; margin-bottom: 30px;
+}
+
+/* Orbital button */
+@property --angle {
+  syntax: '<angle>'; initial-value: 0deg; inherits: false;
+}
+.orbital-btn-wrap { position: relative; width: fit-content; }
+.orbital-ring {
+  position: absolute; inset: -3px; border-radius: 999px; padding: 2.5px;
+  background: conic-gradient(from var(--angle), var(--blue), var(--purple), var(--pink), var(--peach), var(--yellow), var(--blue));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: orbit 6s linear infinite;
+}
+@keyframes orbit { to { --angle: 360deg; } }
+.orbital-btn {
+  position: relative; z-index: 1;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 26.5px; border-radius: 999px;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+  border: none; cursor: pointer;
+  font-family: 'Syne', sans-serif; font-size: 12px;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: #fff; text-shadow: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.2), 0 8px 32px rgba(0,0,0,0.4);
+  transition: background 0.25s;
+}
+.orbital-btn:hover { background: rgba(255,255,255,0.32); }
+.btn-arrow {
+  display: inline-flex; align-items: center;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.orbital-btn:hover .btn-arrow { transform: translateX(5px); }
+
+/* FEATURE 8: Scroll indicator */
+.scroll-indicator {
+  position: absolute; bottom: 32px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  z-index: 10; animation-delay: 1.2s !important;
+}
+.scroll-indicator span {
+  font-size: 8px; letter-spacing: 0.4em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3); font-family: 'Inter', sans-serif;
+}
+.scroll-mouse {
+  width: 20px; height: 32px;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 10px; position: relative;
+}
+.scroll-wheel {
+  position: absolute; top: 5px; left: 50%; transform: translateX(-50%);
+  width: 2px; height: 6px; background: rgba(255,255,255,0.5);
+  border-radius: 1px;
+  animation: scroll-bounce 1.8s ease-in-out infinite;
+}
+@keyframes scroll-bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+  80%       { transform: translateX(-50%) translateY(10px); opacity: 0; }
+}
+
+/* Hero footer ticker */
+.hero-footer {
+  position: relative; z-index: 10;
+  padding: 0 var(--pad) 28px;
+}
+
+/* ═══════════════════════════════════════════════
+   SECTION SHARED STYLES
+═══════════════════════════════════════════════ */
+section {
+  padding: 100px var(--pad);
+  background: var(--bg-section);
+  transition: background 0.4s;
+}
+section:nth-child(even) { background: var(--bg-alt); }
+
+.section-label {
+  font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5em;
+  color: var(--blue); margin-bottom: 14px;
+  font-family: 'Inter', sans-serif;
+}
+.section-title {
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 800; line-height: 1.05;
+  letter-spacing: -0.02em; color: var(--text);
+  margin-bottom: 16px;
+}
+.section-sub {
+  font-size: 16px; font-weight: 300; line-height: 1.7;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  max-width: 520px; margin-bottom: 60px;
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0; transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ═══════════════════════════════════════════════
+   ABOUT SECTION
+═══════════════════════════════════════════════ */
+#about .about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+}
+.about-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  margin-top: 40px;
+}
+.stat-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 28px 24px;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.stat-card:hover { border-color: var(--blue); transform: translateY(-4px); }
+.stat-num {
+  font-size: 42px; font-weight: 800;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1;
+}
+.stat-label {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-muted); margin-top: 6px;
+  font-family: 'Inter', sans-serif;
+}
+
+.about-visual {
+  position: relative; border-radius: 24px; overflow: hidden;
+  aspect-ratio: 4/5;
+  border: 1px solid var(--border);
+}
+.about-visual img {
+  width: 100%; height: 100%; object-fit: cover;
+  filter: grayscale(30%);
+  transition: transform 0.6s ease, filter 0.4s;
+}
+.about-visual:hover img { transform: scale(1.04); filter: grayscale(0%); }
+.about-visual-badge {
+  position: absolute; bottom: 20px; left: 20px; right: 20px;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px; padding: 16px 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.badge-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  flex-shrink: 0;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+.badge-text { font-size: 13px; font-weight: 600; color: #fff; }
+.badge-sub { font-size: 11px; color: rgba(255,255,255,0.5); font-family: 'Inter', sans-serif; margin-top: 2px; }
+
+/* ═══════════════════════════════════════════════
+   PHOTOS / GALLERY SECTION
+═══════════════════════════════════════════════ */
+#photos { background: var(--bg); }
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto;
+  gap: 16px;
+}
+.gallery-item {
+  position: relative; overflow: hidden;
+  border-radius: 16px; cursor: pointer;
+  border: 1px solid var(--border);
+  aspect-ratio: 4/3;
+}
+.gallery-item:nth-child(1) { grid-column: span 2; aspect-ratio: 16/9; }
+.gallery-item:nth-child(5) { grid-column: span 2; aspect-ratio: 16/9; }
+
+.gallery-item img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.5s ease;
+  display: block;
+}
+.gallery-item:hover img { transform: scale(1.06); }
+.gallery-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.3s;
+  display: flex; align-items: flex-end;
+  padding: 20px;
+}
+.gallery-item:hover .gallery-overlay { opacity: 1; }
+.gallery-caption { font-size: 13px; font-weight: 600; color: #fff; }
+.gallery-icon {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.3s, transform 0.3s;
+}
+.gallery-item:hover .gallery-icon {
+  opacity: 1; transform: translate(-50%, -50%) scale(1);
+}
+
+/* FEATURE 9: LIGHTBOX */
+.lightbox {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.95);
+  backdrop-filter: blur(20px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.lightbox.open { opacity: 1; pointer-events: all; }
+.lightbox-img {
+  max-width: 90vw; max-height: 85vh;
+  object-fit: contain; border-radius: 12px;
+  border: 1px solid var(--border);
+  transform: scale(0.95); transition: transform 0.35s ease;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+}
+.lightbox.open .lightbox-img { transform: scale(1); }
+.lightbox-close {
+  position: absolute; top: 24px; right: 28px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--border);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: var(--text); font-size: 18px; line-height: 1;
+  transition: background 0.2s;
+}
+.lightbox-close:hover { background: var(--surface-hover); }
+.lightbox-prev, .lightbox-next {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--border);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: var(--text); transition: background 0.2s, transform 0.2s;
+}
+.lightbox-prev { left: 24px; }
+.lightbox-next { right: 24px; }
+.lightbox-prev:hover { background: var(--surface-hover); transform: translateY(-50%) translateX(-3px); }
+.lightbox-next:hover { background: var(--surface-hover); transform: translateY(-50%) translateX(3px); }
+.lightbox-counter {
+  position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+  font-size: 12px; color: var(--text-muted);
+  font-family: 'Inter', sans-serif; letter-spacing: 0.1em;
+}
+
+/* ═══════════════════════════════════════════════
+   CREW SECTION
+═══════════════════════════════════════════════ */
+#crew { background: var(--bg-alt); }
+
+.crew-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+.crew-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px 24px;
+  text-align: center;
+  transition: border-color 0.3s, transform 0.3s, background 0.3s;
+  position: relative; overflow: hidden;
+}
+.crew-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(to right, transparent, var(--blue), transparent);
+  opacity: 0; transition: opacity 0.3s;
+}
+.crew-card:hover { border-color: rgba(59,130,246,0.3); transform: translateY(-6px); }
+.crew-card:hover::before { opacity: 1; }
+
+.crew-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  margin: 0 auto 16px;
+  border: 2px solid var(--border);
+  object-fit: cover;
+  transition: border-color 0.3s;
+  display: block;
+}
+.crew-card:hover .crew-avatar { border-color: var(--blue); }
+.crew-name { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.crew-role {
+  font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--blue); font-family: 'Inter', sans-serif;
+  margin-bottom: 12px;
+}
+.crew-bio {
+  font-size: 13px; line-height: 1.6;
+  color: var(--text-muted); font-family: 'Inter', sans-serif;
+}
+.crew-social {
+  display: flex; justify-content: center; gap: 10px; margin-top: 16px;
+}
+.crew-social a {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); text-decoration: none; font-size: 12px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.crew-social a:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+/* ═══════════════════════════════════════════════
+   CONTACT SECTION
+═══════════════════════════════════════════════ */
+#contact { background: var(--bg-section); }
+
+.contact-wrap {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: start;
+}
+.contact-details { margin-top: 40px; display: flex; flex-direction: column; gap: 20px; }
+.contact-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px;
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: 12px; transition: border-color 0.25s;
+}
+.contact-item:hover { border-color: var(--blue); }
+.contact-item-icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.contact-item-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); font-family: 'Inter', sans-serif; }
+.contact-item-value { font-size: 14px; font-weight: 600; color: var(--text); margin-top: 2px; }
+
+/* Contact Form */
+.contact-form {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 24px; padding: 40px;
+}
+.form-group { margin-bottom: 20px; }
+.form-group label {
+  display: block; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--text-muted); margin-bottom: 8px;
+  font-family: 'Inter', sans-serif;
+}
+.form-group input, .form-group textarea, .form-group select {
+  width: 100%; padding: 14px 18px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text); font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  outline: none; transition: border-color 0.25s, background 0.25s;
+  resize: none;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  border-color: var(--blue);
+  background: var(--surface-hover);
+}
+.form-group textarea { height: 120px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.form-error {
+  font-size: 11px; color: #ef4444;
+  margin-top: 5px; display: none;
+  font-family: 'Inter', sans-serif;
+}
+.form-group.invalid .form-error { display: block; }
+.form-group.invalid input, .form-group.invalid textarea {
+  border-color: #ef4444;
+}
+
+.submit-btn {
+  width: 100%; padding: 15px 24px;
+  background: var(--blue); border: none;
+  border-radius: 12px; color: #fff;
+  font-family: 'Syne', sans-serif; font-size: 13px;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.submit-btn:hover { background: #2563eb; transform: translateY(-2px); }
+.submit-btn:active { transform: translateY(0); }
+
+.form-success {
+  display: none; text-align: center; padding: 24px;
+}
+.form-success-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px; font-size: 24px;
+}
+.form-success p { color: var(--text-muted); font-size: 14px; font-family: 'Inter', sans-serif; }
+
+/* ═══════════════════════════════════════════════
+   FOOTER / TICKER
+═══════════════════════════════════════════════ */
+footer {
+  background: var(--bg);
+  padding: 0 var(--pad) 32px;
+  border-top: 1px solid var(--border);
+}
+.footer-top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 32px 0 28px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+}
+.footer-copy {
+  font-size: 12px; color: var(--text-dim);
+  font-family: 'Inter', sans-serif;
+}
+.footer-links {
+  display: flex; gap: 28px; list-style: none;
+}
+.footer-links a {
+  font-size: 12px; color: var(--text-muted); text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--text); }
+
+.ecosystem-label {
+  text-align: center; font-size: 9px; font-weight: 700;
+  letter-spacing: 0.6em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 14px;
+}
+.ticker-outer {
+  overflow: hidden; width: 100%;
+  mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+}
+.ticker-track {
+  display: flex; align-items: center; gap: 48px;
+  width: max-content;
+  animation: ticker 22s linear infinite;
+}
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-item {
+  display: flex; align-items: center; gap: 8px;
+  filter: grayscale(1); opacity: 0.55; flex-shrink: 0;
+}
+.ticker-item svg { height: 15px; width: auto; flex-shrink: 0; }
+.ticker-item span {
+  font-size: 11px; font-family: 'Inter', sans-serif;
+  font-weight: 500; letter-spacing: 0.04em;
+  color: var(--text); white-space: nowrap;
+}
+.ticker-divider { width: 1px; height: 14px; background: var(--border); flex-shrink: 0; }
+
+/* ═══════════════════════════════════════════════
+   VISION SANDBOX SECTION
+═══════════════════════════════════════════════ */
+#sandbox {
+  background: var(--bg);
+}
+.sandbox-container {
+  display: grid;
+  grid-template-columns: 300px 1fr 340px;
+  gap: 24px;
+  align-items: stretch;
+  margin-top: 40px;
+}
+.sandbox-sidebar {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.control-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+}
+.feed-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.feed-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s ease;
+}
+.feed-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+  border-color: var(--border-hover);
+}
+.feed-btn.active {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: var(--blue);
+  color: var(--text);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.15);
+}
+.feed-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+}
+.threshold-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--input-bg);
+  outline: none;
+}
+.threshold-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+  transition: transform 0.1s;
+}
+.threshold-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+.threshold-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+  transition: transform 0.1s;
+}
+.threshold-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+.toggle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.toggle-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--text-muted);
+  user-select: none;
+}
+.toggle-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  accent-color: var(--blue);
+  cursor: pointer;
+}
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+.sandbox-action-btn {
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+}
+.sandbox-action-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+}
+.sandbox-action-btn.primary {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+.sandbox-action-btn.primary:hover {
+  background: #2563eb;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+}
+.sandbox-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Viewport Panel */
+.sandbox-viewport {
+  background: #000;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 450px;
+}
+.viewport-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#sandbox-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: filter 0.3s ease;
+}
+.heatmap-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 35% 45%, rgba(239, 68, 68, 0.4) 0%, rgba(249, 115, 22, 0.2) 15%, transparent 35%),
+              radial-gradient(circle at 65% 55%, rgba(59, 130, 246, 0.4) 0%, rgba(168, 85, 247, 0.15) 20%, transparent 40%);
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: color-dodge;
+  transition: opacity 0.4s ease;
+  z-index: 2;
+}
+.heatmap-overlay.active {
+  opacity: 1;
+}
+.overlay-container {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.viewport-hud {
+  position: absolute;
+  top: 20px; left: 20px; right: 20px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 4;
+  pointer-events: none;
+}
+.hud-item {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  font-weight: bold;
+  color: #22c55e;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hud-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+/* Bounding Box Style */
+.bbox {
+  position: absolute;
+  border: 2px solid var(--blue);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  transform: scale(0.96);
+}
+.bbox.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+.bbox-label {
+  position: absolute;
+  bottom: 100%;
+  left: -2px;
+  background: var(--blue);
+  color: #fff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  white-space: nowrap;
+  border-radius: 3px 3px 0 0;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.2);
+}
+
+/* Laser sweep animation */
+.scan-laser {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(to right, transparent, var(--blue), #06b6d4, var(--blue), transparent);
+  box-shadow: 0 0 15px var(--blue), 0 0 30px #06b6d4;
+  opacity: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+.scan-laser.scanning {
+  animation: scan-sweep 2s ease-in-out;
+}
+@keyframes scan-sweep {
+  0% { top: 0%; opacity: 1; }
+  90% { top: 100%; opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* Console Panel */
+.sandbox-console {
+  background: #060608;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+.console-header {
+  padding: 14px 20px;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid var(--border);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.console-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ef4444;
+}
+.console-dot.green {
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+}
+.console-body {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  min-height: 280px;
+  max-height: 350px;
+}
+.console-body pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.console-body code {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  color: #38bdf8;
+  line-height: 1.5;
+}
+.console-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--border);
+}
+.c-stat {
+  padding: 16px;
+  text-align: center;
+  background: rgba(255,255,255,0.01);
+}
+.c-stat:first-child {
+  border-right: 1px solid var(--border);
+}
+.c-stat-val {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+}
+.c-stat-lbl {
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ═══════════════════════════════════════════════
+   GLOBAL EDGE NETWORK SECTION
+═══════════════════════════════════════════════ */
+#network {
+  background: var(--bg-alt);
+  position: relative;
+}
+.network-container {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 32px;
+  margin-top: 40px;
+  align-items: stretch;
+}
+.network-sidebar {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.network-metric-card {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.network-metric-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+}
+.network-metric-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+  font-family: 'Syne', sans-serif;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.network-metric-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: 'Inter', sans-serif;
+}
+.network-nodes-panel {
+  background: #060608;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 400px;
+}
+.network-nodes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 15px;
+}
+.network-nodes-title {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text);
+}
+.network-nodes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  flex: 1;
+}
+.node-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+.node-card:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.04);
+}
+.node-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--purple));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.node-card:hover::before {
+  opacity: 1;
+}
+.node-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.node-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.node-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: bold;
+  font-family: 'Courier New', Courier, monospace;
+}
+.node-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+}
+.node-status-dot.pinging {
+  background: #eab308;
+  box-shadow: 0 0 8px #eab308;
+  animation: pulse-dot 1s ease-in-out infinite;
+}
+.node-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.node-meta-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-muted);
+}
+.node-meta-val {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  color: var(--text);
+}
+.node-meta-val.latency {
+  color: #22c55e;
+}
+.node-meta-val.latency.high {
+  color: #eab308;
+}
+
+/* ═══════════════════════════════════════════════
+   INTERACTIVE PRICING SECTION
+═══════════════════════════════════════════════ */
+#pricing {
+  background: var(--bg);
+  position: relative;
+}
+.pricing-toggle-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+.pricing-toggle-label {
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.25s;
+}
+.pricing-toggle-label.active {
+  color: var(--text);
+}
+.pricing-toggle-switch {
+  position: relative;
+  width: 56px;
+  height: 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.pricing-toggle-knob {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 20px;
+  height: 20px;
+  background: var(--blue);
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+}
+.pricing-toggle-switch.active .pricing-toggle-knob {
+  transform: translateX(28px);
+  background: var(--purple);
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
+}
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  align-items: stretch;
+}
+.pricing-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+.pricing-card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+.pricing-card.popular {
+  border: 2px solid transparent;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: linear-gradient(var(--bg-section), var(--bg-section)), 
+                    linear-gradient(135deg, var(--blue), var(--purple), var(--pink));
+  transform: scale(1.03);
+}
+.pricing-card.popular:hover {
+  transform: scale(1.03) translateY(-8px);
+  box-shadow: 0 24px 48px rgba(59, 130, 246, 0.15);
+}
+.popular-badge {
+  position: absolute;
+  top: 24px; right: 24px;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+.plan-name {
+  font-size: 18px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.plan-desc {
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-muted);
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+.plan-price-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 32px;
+}
+.plan-price {
+  font-size: 56px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+.plan-period {
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-dim);
+}
+.plan-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 40px;
+  flex: 1;
+}
+.plan-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-muted);
+}
+.plan-feature-item svg {
+  width: 16px;
+  height: 16px;
+  color: var(--blue);
+  flex-shrink: 0;
+}
+.pricing-card.popular .plan-feature-item svg {
+  color: var(--purple);
+}
+.plan-btn {
+  width: 100%;
+  padding: 16px 24px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.plan-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+.pricing-card.popular .plan-btn {
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  border: none;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+}
+.pricing-card.popular .plan-btn:hover {
+  background: linear-gradient(135deg, #2563eb, #9333ea);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* ═══════════════════════════════════════════════
+   PREMIUM FAQ ACCORDION SECTION
+═══════════════════════════════════════════════ */
+#faq {
+  background: var(--bg-section);
+  position: relative;
+}
+.faq-container {
+  max-width: 800px;
+  margin: 40px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.faq-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.faq-item:hover {
+  border-color: var(--border-hover);
+}
+.faq-header {
+  width: 100%;
+  padding: 24px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  gap: 20px;
+}
+.faq-icon-wrap {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+.faq-item.active {
+  border-color: var(--blue);
+  background: rgba(255, 255, 255, 0.02);
+}
+.faq-item.active .faq-icon-wrap {
+  transform: rotate(45deg);
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+}
+.faq-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.faq-content {
+  padding: 0 30px 24px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  :root { --pad: 40px; }
+  #about .about-grid { grid-template-columns: 1fr; gap: 48px; }
+  .about-visual { max-width: 500px; }
+  .crew-grid { grid-template-columns: repeat(2, 1fr); }
+  .contact-wrap { grid-template-columns: 1fr; gap: 48px; }
+  .sandbox-container { grid-template-columns: 1fr; gap: 20px; }
+  .sandbox-console { height: auto; }
+  .network-container { grid-template-columns: 1fr; gap: 24px; }
+  .pricing-grid { grid-template-columns: 1fr; gap: 24px; }
+  .pricing-card.popular { transform: none; }
+  .pricing-card.popular:hover { transform: translateY(-8px); }
+}
+@media (max-width: 768px) {
+  :root { --pad: 24px; }
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .theme-toggle { display: none; }
+  .gallery-grid { grid-template-columns: 1fr 1fr; }
+  .gallery-item:nth-child(1), .gallery-item:nth-child(5) { grid-column: span 2; }
+  .form-row { grid-template-columns: 1fr; }
+  .footer-top { flex-direction: column; gap: 16px; text-align: center; }
+}
+@media (max-width: 480px) {
+  .crew-grid { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: 1fr; }
+  .gallery-item:nth-child(1), .gallery-item:nth-child(5) { grid-column: 1; }
+  .about-stats { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── CURSOR ── -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- ── SCROLL PROGRESS ── -->
+<div id="scroll-progress"></div>
+
+<!-- ── LIGHTBOX ── -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lb-close">✕</button>
+  <button class="lightbox-prev" id="lb-prev">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </button>
+  <img class="lightbox-img" id="lb-img" src="" alt=""/>
+  <button class="lightbox-next" id="lb-next">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </button>
+  <div class="lightbox-counter" id="lb-counter">1 / 6</div>
+</div>
+
+<!-- ── MOBILE OVERLAY ── -->
+<div class="mobile-overlay" id="mobile-overlay"></div>
+
+<!-- ── MOBILE NAV ── -->
+<nav class="mobile-nav" id="mobile-nav">
+  <a href="#home" class="mobile-link">Home</a>
+  <a href="#about" class="mobile-link">About</a>
+  <a href="#sandbox" class="mobile-link">Sandbox</a>
+  <a href="#network" class="mobile-link">Network</a>
+  <a href="#pricing" class="mobile-link">Pricing</a>
+  <a href="#photos" class="mobile-link">Photos</a>
+  <a href="#crew" class="mobile-link">Crew</a>
+  <a href="#contact" class="mobile-link">Contact</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════ -->
+<nav id="main-nav">
+  <a class="logo" href="#home">
+    <div class="logo-icon">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="3" fill="#3b82f6"/>
+        <circle cx="9" cy="2" r="1.5" fill="#3b82f6" opacity="0.7"/>
+        <circle cx="9" cy="16" r="1.5" fill="#3b82f6" opacity="0.7"/>
+        <circle cx="2" cy="9" r="1.5" fill="#3b82f6" opacity="0.7"/>
+        <circle cx="16" cy="9" r="1.5" fill="#3b82f6" opacity="0.7"/>
+        <line x1="9" y1="3.5" x2="9" y2="6" stroke="#3b82f6" stroke-width="0.8" opacity="0.5"/>
+        <line x1="9" y1="12" x2="9" y2="14.5" stroke="#3b82f6" stroke-width="0.8" opacity="0.5"/>
+        <line x1="3.5" y1="9" x2="6" y2="9" stroke="#3b82f6" stroke-width="0.8" opacity="0.5"/>
+        <line x1="12" y1="9" x2="14.5" y2="9" stroke="#3b82f6" stroke-width="0.8" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="logo-text">auto-automation</div>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#home" class="active">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#sandbox">Sandbox</a></li>
+    <li><a href="#network">Network</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#photos">Photos</a></li>
+    <li><a href="#crew">Crew</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <!-- Dark/Light toggle -->
+    <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+      <div class="theme-toggle-knob"></div>
+      <span class="theme-toggle-icon">☀️</span>
+    </button>
+
+    <!-- Play/Pause button -->
+    <button class="play-btn" id="play-btn" aria-label="Play/Pause">
+      <svg id="play-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M5 3.5L13 8L5 12.5V3.5Z" fill="white"/>
+      </svg>
+      <svg id="pause-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" style="display:none">
+        <rect x="4" y="3" width="3" height="10" rx="1" fill="white"/>
+        <rect x="9" y="3" width="3" height="10" rx="1" fill="white"/>
+      </svg>
+    </button>
+
+    <!-- Hamburger -->
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════
+   HERO SECTION
+═══════════════════════════════════════════════ -->
+<section id="home" style="padding:0;">
+  <div class="bg-video-wrap">
+    <video id="bg-video" autoplay muted loop playsinline>
+      <source src="https://cdn.sceneai.art/Hero%20Section%20Video/9ad5cc99-2fa4-4154-bcc2-5c9ec152778e.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="text-protect"></div>
+
+  <div class="hero-content">
+    <div class="hero-tag">
+      <span class="dot"></span>
+      Initialize Vision
+    </div>
+    <h1 class="hero-heading">Intelligence<br>Unbound</h1>
+    <p class="hero-sub">
+      A new paradigm in visual intelligence — where machine perception meets cinematic precision, unlocking what the eye cannot see alone.
+    </p>
+    <div class="orbital-btn-wrap">
+      <div class="orbital-ring"></div>
+      <button class="orbital-btn" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
+        Explore the System
+        <span class="btn-arrow">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="scroll-indicator reveal" style="position:absolute;bottom:120px;left:50%;transform:translateX(-50%);z-index:10;">
+    <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+    <span>Scroll</span>
+  </div>
+
+  <!-- Ticker -->
+  <div class="hero-footer" style="position:absolute;bottom:0;left:0;right:0;">
+    <p class="ecosystem-label">Auto-Automation Ecosystem</p>
+    <div class="ticker-outer">
+      <div class="ticker-track">
+        <!-- SET 1 -->
+        <div class="ticker-item">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          <span>Google</span>
+        </div>
+        <div class="ticker-divider"></div>
+        <div class="ticker-item">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+          <span>Cust.io</span>
+        </div>
+        <div class="ticker-divider"></div>
+        <div class="ticker-item">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M4 4h16v2H4zm0 14h16v2H4zm0-7h7v2H4zm9 0h7v2h-7z"/></svg>
+          <span>Hummel</span>
+        </div>
+        <div class="ticker-divider"></div>
+        <div class="ticker-item">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <span>Copper</span>
+        </div>
+        <div class="ticker-divider"></div>
+        <div class="ticker-item">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M12 2.5C9.5 2.5 7.3 3.6 6 5.5H18c-1.3-1.9-3.5-3-6-3zM4.5 5.5S3 6.5 3 8h18c0-1.5-1.5-2.5-1.5-2.5H4.5zM12 8l-1 13.5 1 .5 1-.5L12 8z"/></svg>
+          <span>Tesla</span>
+        </div>
+        <div class="ticker-divider"></div>
+        <!-- SET 2 -->
+        <div class="ticker-item">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          <span>Google</span>
+        </div>
+        <div class="ticker-divider"></div>
+        <div class="ticker-item">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+          <span>Cust.io</span>
+        </div>
+        <div class="ticker-divider"></div>
+        <div class="ticker-item">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M4 4h16v2H4zm0 14h16v2H4zm0-7h7v2H4zm9 0h7v2h-7z"/></svg>
+          <span>Hummel</span>
+        </div>
+        <div class="ticker-divider"></div>
+        <div class="ticker-item">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <span>Copper</span>
+        </div>
+        <div class="ticker-divider"></div>
+        <div class="ticker-item">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M12 2.5C9.5 2.5 7.3 3.6 6 5.5H18c-1.3-1.9-3.5-3-6-3zM4.5 5.5S3 6.5 3 8h18c0-1.5-1.5-2.5-1.5-2.5H4.5zM12 8l-1 13.5 1 .5 1-.5L12 8z"/></svg>
+          <span>Tesla</span>
+        </div>
+        <div class="ticker-divider"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+   ABOUT SECTION
+═══════════════════════════════════════════════ -->
+<section id="about">
+  <div class="about-grid">
+    <div class="reveal">
+      <p class="section-label">Who We Are</p>
+      <h2 class="section-title">Vision meets<br>velocity</h2>
+      <p class="section-sub">
+        auto-automation is a next-generation visual intelligence studio. We build systems that see, understand, and act — bridging the gap between human creativity and machine precision.
+      </p>
+      <div class="about-stats">
+        <div class="stat-card reveal">
+          <div class="stat-num">120+</div>
+          <div class="stat-label">Projects Delivered</div>
+        </div>
+        <div class="stat-card reveal">
+          <div class="stat-num">4.9★</div>
+          <div class="stat-label">Client Rating</div>
+        </div>
+        <div class="stat-card reveal">
+          <div class="stat-num">38</div>
+          <div class="stat-label">Global Partners</div>
+        </div>
+        <div class="stat-card reveal">
+          <div class="stat-num">∞</div>
+          <div class="stat-label">Possibilities</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-visual reveal">
+      <img src="https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?w=600&q=80" alt="Visual intelligence"/>
+      <div class="about-visual-badge">
+        <div class="badge-dot"></div>
+        <div>
+          <div class="badge-text">Systems Online</div>
+          <div class="badge-sub">All 12 nodes active</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+   SANDBOX SECTION
+═══════════════════════════════════════════════ -->
+<section id="sandbox">
+  <div class="reveal">
+    <p class="section-label">Interactive Demo</p>
+    <h2 class="section-title">Vision Sandbox</h2>
+    <p class="section-sub">Test-drive our real-time computer vision models in the browser. Select a preset feed, adjust the confidence threshold, and inspect the telemetry output.</p>
+  </div>
+  
+  <div class="sandbox-container reveal">
+    <!-- Left panel: Controls -->
+    <div class="sandbox-sidebar">
+      <div class="control-group">
+        <label class="control-label">Select Feed Preset</label>
+        <div class="feed-options">
+          <button class="feed-btn active" data-preset="warehouse">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            <span>Logistics Warehouse</span>
+          </button>
+          <button class="feed-btn" data-preset="traffic">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="1" y="3" width="15" height="13" rx="2" ry="2"></rect><line x1="16" y1="8" x2="20" y2="8"></line><line x1="16" y1="12" x2="20" y2="12"></line><line x1="18" y1="16" x2="18" y2="21"></line><line x1="8" y1="16" x2="8" y2="21"></line></svg>
+            <span>Smart City Traffic</span>
+          </button>
+          <button class="feed-btn" data-preset="industrial">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+            <span>Assembly Quality</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" style="display:flex; justify-content:space-between;">
+          <span>Confidence Threshold</span>
+          <span id="threshold-val" style="color:var(--blue); font-family:monospace;">0.50</span>
+        </label>
+        <input type="range" class="threshold-slider" id="threshold-slider" min="0.10" max="0.95" step="0.05" value="0.50" />
+      </div>
+
+      <div class="control-group">
+        <label class="control-label">Visual Overlays</label>
+        <div class="toggle-list">
+          <label class="toggle-item">
+            <input type="checkbox" id="toggle-boxes" checked />
+            <span>Bounding Boxes</span>
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="toggle-labels" checked />
+            <span>Object Labels</span>
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="toggle-heatmap" />
+            <span>Thermal Heatmap</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="sandbox-action-btn primary" id="btn-scan">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" style="margin-right:2px;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          <span>Run Inference</span>
+        </button>
+        <button class="sandbox-action-btn" id="btn-reset" disabled>Reset</button>
+      </div>
+    </div>
+
+    <!-- Center panel: Main Screen with overlays -->
+    <div class="sandbox-viewport">
+      <div class="viewport-wrapper" id="viewport-wrapper">
+        <img id="sandbox-image" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80" alt="Logistics Warehouse"/>
+        <div class="scan-laser" id="scan-laser"></div>
+        <div class="heatmap-overlay" id="heatmap-overlay"></div>
+        <div class="overlay-container" id="overlay-container">
+          <!-- Bounding boxes will be inserted here dynamically -->
+        </div>
+        <div class="viewport-hud">
+          <div class="hud-item"><span class="hud-dot"></span> <span id="hud-status">STANDBY</span></div>
+          <div class="hud-item" id="hud-latency">LATENCY: --</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right panel: Telemetry & JSON Console -->
+    <div class="sandbox-console">
+      <div class="console-header">
+        <span>Inference Telemetry</span>
+        <span class="console-dot" id="console-status-dot"></span>
+      </div>
+      <div class="console-body">
+        <pre><code id="json-output">// Click "Run Inference" to analyze the selected feed...</code></pre>
+      </div>
+      <div class="console-stats">
+        <div class="c-stat">
+          <div class="c-stat-val" id="stat-count">0</div>
+          <div class="c-stat-lbl">Objects Detected</div>
+        </div>
+        <div class="c-stat">
+          <div class="c-stat-val" id="stat-accuracy">--</div>
+          <div class="c-stat-lbl">Mean Confidence</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+   GLOBAL EDGE NETWORK SECTION
+═══════════════════════════════════════════════ -->
+<section id="network">
+  <p class="section-label reveal">Network Infrastructure</p>
+  <h2 class="section-title reveal">Global Edge Network</h2>
+  <p class="section-sub reveal">Our real-time intelligence pipeline is deployed directly on the edge. High throughput, sub-15ms latency, and local processing across 12 automated clusters.</p>
+
+  <div class="network-container reveal">
+    <!-- Left panel: Metrics & Action -->
+    <div class="network-sidebar">
+      <div class="network-metric-card">
+        <span class="network-metric-title">Active Connections</span>
+        <span class="network-metric-value" id="net-active-conn">482,910</span>
+        <span class="network-metric-desc">Parallel camera streams analyzed concurrently</span>
+      </div>
+      
+      <div class="network-metric-card">
+        <span class="network-metric-title">Network Throughput</span>
+        <span class="network-metric-value" id="net-throughput">894.2 GB/s</span>
+        <span class="network-metric-desc">Continuous visual telemetry bandwidth on the edge</span>
+      </div>
+
+      <div class="network-metric-card">
+        <span class="network-metric-title">Average Latency</span>
+        <span class="network-metric-value" id="net-avg-latency" style="background: linear-gradient(135deg, #22c55e, #10b981); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">12.4 ms</span>
+        <span class="network-metric-desc">Global peer ping response time from target ingest</span>
+      </div>
+
+      <button class="plan-btn" id="btn-ping-network" style="background: linear-gradient(135deg, var(--blue), var(--purple)); border: none; color: #fff; box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" style="margin-right:4px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
+        <span>Ping Edge Clusters</span>
+      </button>
+    </div>
+
+    <!-- Right panel: Live Server Nodes Grid -->
+    <div class="network-nodes-panel">
+      <div class="network-nodes-header">
+        <span class="network-nodes-title">Live Edge Nodes</span>
+        <span class="node-status" style="color:var(--text-muted);">STATUS: <span class="node-status-dot"></span> <span style="color:var(--text);" id="nodes-status-text">OPERATIONAL</span></span>
+      </div>
+
+      <div class="network-nodes-grid" id="network-nodes-grid">
+        <!-- Node 1 -->
+        <div class="node-card" data-node="us-east">
+          <div class="node-info">
+            <span class="node-name">US-East-1 (Virginia)</span>
+            <div class="node-status">
+              <span class="node-status-dot"></span>
+              <span class="node-status-label">ONLINE</span>
+            </div>
+          </div>
+          <div class="node-meta">
+            <div class="node-meta-item">
+              <span>Bandwidth Ingest</span>
+              <span class="node-meta-val" id="node-us-east-bw">148.5 GB/s</span>
+            </div>
+            <div class="node-meta-item">
+              <span>Response Latency</span>
+              <span class="node-meta-val latency" id="node-us-east-ping">11 ms</span>
+            </div>
+            <div class="node-meta-item">
+              <span>Cluster Load</span>
+              <span class="node-meta-val" id="node-us-east-load">42%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Node 2 -->
+        <div class="node-card" data-node="eu-west">
+          <div class="node-info">
+            <span class="node-name">EU-West-2 (London)</span>
+            <div class="node-status">
+              <span class="node-status-dot"></span>
+              <span class="node-status-label">ONLINE</span>
+            </div>
+          </div>
+          <div class="node-meta">
+            <div class="node-meta-item">
+              <span>Bandwidth Ingest</span>
+              <span class="node-meta-val" id="node-eu-west-bw">235.1 GB/s</span>
+            </div>
+            <div class="node-meta-item">
+              <span>Response Latency</span>
+              <span class="node-meta-val latency" id="node-eu-west-ping">14 ms</span>
+            </div>
+            <div class="node-meta-item">
+              <span>Cluster Load</span>
+              <span class="node-meta-val" id="node-eu-west-load">58%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Node 3 -->
+        <div class="node-card" data-node="ap-south">
+          <div class="node-info">
+            <span class="node-name">AP-South-1 (Mumbai)</span>
+            <div class="node-status">
+              <span class="node-status-dot"></span>
+              <span class="node-status-label">ONLINE</span>
+            </div>
+          </div>
+          <div class="node-meta">
+            <div class="node-meta-item">
+              <span>Bandwidth Ingest</span>
+              <span class="node-meta-val" id="node-ap-south-bw">112.4 GB/s</span>
+            </div>
+            <div class="node-meta-item">
+              <span>Response Latency</span>
+              <span class="node-meta-val latency" id="node-ap-south-ping">16 ms</span>
+            </div>
+            <div class="node-meta-item">
+              <span>Cluster Load</span>
+              <span class="node-meta-val" id="node-ap-south-load">29%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Node 4 -->
+        <div class="node-card" data-node="ap-northeast">
+          <div class="node-info">
+            <span class="node-name">AP-Northeast-1 (Tokyo)</span>
+            <div class="node-status">
+              <span class="node-status-dot"></span>
+              <span class="node-status-label">ONLINE</span>
+            </div>
+          </div>
+          <div class="node-meta">
+            <div class="node-meta-item">
+              <span>Bandwidth Ingest</span>
+              <span class="node-meta-val" id="node-ap-northeast-bw">198.2 GB/s</span>
+            </div>
+            <div class="node-meta-item">
+              <span>Response Latency</span>
+              <span class="node-meta-val latency" id="node-ap-northeast-ping">9 ms</span>
+            </div>
+            <div class="node-meta-item">
+              <span>Cluster Load</span>
+              <span class="node-meta-val" id="node-ap-northeast-load">65%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+   INTERACTIVE PRICING SECTION
+═══════════════════════════════════════════════ -->
+<section id="pricing">
+  <p class="section-label reveal">Flexible Licensing</p>
+  <h2 class="section-title reveal">SaaS Subscription Plans</h2>
+  <p class="section-sub reveal">Scale your vision intelligence footprint seamlessly. Start free or unleash cloud clusters for enterprise automation.</p>
+
+  <div class="pricing-toggle-wrap reveal">
+    <span class="pricing-toggle-label active" id="billing-monthly">Monthly Billing</span>
+    <div class="pricing-toggle-switch" id="pricing-toggle-switch">
+      <div class="pricing-toggle-knob"></div>
+    </div>
+    <span class="pricing-toggle-label" id="billing-yearly">Yearly Billing <span style="color:var(--pink); font-size:11px; font-weight:bold; margin-left:4px;">(Save 25%)</span></span>
+  </div>
+
+  <div class="pricing-grid reveal">
+    <!-- Card 1 -->
+    <div class="pricing-card">
+      <div class="plan-name">Edge Lite</div>
+      <div class="plan-desc">Perfect for developers building prototypes, local sandbox experiments, and low-frequency analysis.</div>
+      <div class="plan-price-wrap">
+        <span class="plan-price" id="price-lite">$19</span>
+        <span class="plan-period" id="period-lite">/mo</span>
+      </div>
+      <ul class="plan-features">
+        <li class="plan-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Up to 5 concurrent streams</span>
+        </li>
+        <li class="plan-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Standard pre-trained vision models</span>
+        </li>
+        <li class="plan-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Max 1080p resolution pipeline</span>
+        </li>
+        <li class="plan-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Community support & documentation</span>
+        </li>
+      </ul>
+      <button class="plan-btn" onclick="alert('Proceeding to Edge Lite Checkout...')">Get Started</button>
+    </div>
+
+    <!-- Card 2 (Popular) -->
+    <div class="pricing-card popular">
+      <div class="popular-badge">Recommended</div>
+      <div class="plan-name">Edge Unlimited</div>
+      <div class="plan-desc">High-speed edge inference with advanced tracking models, dynamic thresholds, and custom weights.</div>
+      <div class="plan-price-wrap">
+        <span class="plan-price" id="price-unlimited">$79</span>
+        <span class="plan-period" id="period-unlimited">/mo</span>
+      </div>
+      <ul class="plan-features">
+        <li class="plan-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Unlimited camera & video streams</span>
+        </li>
+        <li class="plan-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Premium custom-weights vision models</span>
+        </li>
+        <li class="plan-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Full 4K telemetry and scanning resolution</span>
+        </li>
+        <li class="plan-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Ultra-low sub-15ms edge routing</span>
+        </li>
+        <li class="plan-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Dedicated 24/7 technical team support</span>
+        </li>
+      </ul>
+      <button class="plan-btn" onclick="alert('Proceeding to Edge Unlimited Checkout...')">Upgrade to Pro</button>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="pricing-card">
+      <div class="plan-name">Cloud Cluster</div>
+      <div class="plan-desc">For large industrial automation, custom robotics telemetry, and high-performance server clusters.</div>
+      <div class="plan-price-wrap">
+        <span class="plan-price" id="price-enterprise">Custom</span>
+        <span class="plan-period" id="period-enterprise">Quote</span>
+      </div>
+      <ul class="plan-features">
+        <li class="plan-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Dedicated visual cluster infrastructure</span>
+        </li>
+        <li class="plan-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Bespoke custom model training pipelines</span>
+        </li>
+        <li class="plan-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>On-premise air-gapped deployments</span>
+        </li>
+        <li class="plan-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Custom SLA guarantees & high-availability</span>
+        </li>
+      </ul>
+      <button class="plan-btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Contact Sales</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+   PREMIUM FAQ ACCORDION SECTION
+═══════════════════════════════════════════════ -->
+<section id="faq">
+  <p class="section-label reveal">Got Questions?</p>
+  <h2 class="section-title reveal">Frequently Asked Questions</h2>
+  <p class="section-sub reveal">Everything you need to know about Lumina Vision's computer vision platform, APIs, and edge deployment.</p>
+
+  <div class="faq-container reveal">
+    <!-- FAQ 1 -->
+    <div class="faq-item">
+      <button class="faq-header">
+        <span>How does edge inference achieve sub-15ms latency?</span>
+        <span class="faq-icon-wrap">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+      </button>
+      <div class="faq-body">
+        <div class="faq-content">
+          By deploying highly optimized tensor models directly on global edge servers (US, EU, Asia-Pacific), we bypass traditional centralized cloud roundtrips. Visual frames are processed locally at the nearest edge node, minimizing TCP transport latency and returning object boundaries instantly.
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ 2 -->
+    <div class="faq-item">
+      <button class="faq-header">
+        <span>Can I import my own custom weights and custom pre-trained models?</span>
+        <span class="faq-icon-wrap">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+      </button>
+      <div class="faq-body">
+        <div class="faq-content">
+          Yes. Our "Edge Unlimited" and "Cloud Cluster" subscription plans provide direct access to the Lumina Model Ingestion Engine. You can upload custom models trained in PyTorch, TensorFlow, or ONNX, convert them to our optimized edge tensor format, and deploy them to active nodes in under five minutes.
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ 3 -->
+    <div class="faq-item">
+      <button class="faq-header">
+        <span>Is my camera stream and video telemetry secure on your servers?</span>
+        <span class="faq-icon-wrap">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+      </button>
+      <div class="faq-body">
+        <div class="faq-content">
+          Absolutely. Security is our absolute priority. All media pipelines utilize end-to-end TLS 1.3 encryption from target sensor ingest to edge processor. Stream bytes are processed entirely in-memory and are immediately discarded after vector calculation. We never store raw image feeds or video assets unless you explicitly enable analytical archiving. For strict government or financial compliance, we also offer air-gapped on-premise deployments.
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ 4 -->
+    <div class="faq-item">
+      <button class="faq-header">
+        <span>What APIs and SDKs do you support for backend automation?</span>
+        <span class="faq-icon-wrap">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+      </button>
+      <div class="faq-body">
+        <div class="faq-content">
+          Lumina Vision provides native gRPC streams, high-speed WebSocket connections, and clean REST endpoints. Our SDK supports Python, Node.js, Rust, C++, and Go, complete with sample boilerplate code for bounding box rendering, telemetry serialization, and automated camera source reconnection.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+   PHOTOS SECTION
+═══════════════════════════════════════════════ -->
+<section id="photos">
+  <p class="section-label reveal">Gallery</p>
+  <h2 class="section-title reveal">Through the lens</h2>
+  <p class="section-sub reveal">Captured moments at the intersection of art and intelligence. Click any image to explore.</p>
+
+  <div class="gallery-grid">
+    <div class="gallery-item reveal" data-index="0">
+      <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=80" alt="Circuit"/>
+      <div class="gallery-overlay"><span class="gallery-caption">Neural Networks</span></div>
+      <div class="gallery-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="gallery-item reveal" data-index="1">
+      <img src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80" alt="AI"/>
+      <div class="gallery-overlay"><span class="gallery-caption">Deep Vision</span></div>
+      <div class="gallery-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="gallery-item reveal" data-index="2">
+      <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600&q=80" alt="Robot"/>
+      <div class="gallery-overlay"><span class="gallery-caption">Automation Core</span></div>
+      <div class="gallery-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="gallery-item reveal" data-index="3">
+      <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=600&q=80" alt="Lab"/>
+      <div class="gallery-overlay"><span class="gallery-caption">Precision Lab</span></div>
+      <div class="gallery-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="gallery-item reveal" data-index="4">
+      <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=900&q=80" alt="Robot 2"/>
+      <div class="gallery-overlay"><span class="gallery-caption">Synthetic Minds</span></div>
+      <div class="gallery-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="gallery-item reveal" data-index="5">
+      <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&q=80" alt="Data"/>
+      <div class="gallery-overlay"><span class="gallery-caption">Data Streams</span></div>
+      <div class="gallery-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+   CREW SECTION
+═══════════════════════════════════════════════ -->
+<section id="crew">
+  <p class="section-label reveal">The Team</p>
+  <h2 class="section-title reveal">Meet the crew</h2>
+  <p class="section-sub reveal">The minds behind the machine. A collective of engineers, designers, and visionaries.</p>
+
+  <div class="crew-grid">
+    <div class="crew-card reveal">
+      <img class="crew-avatar" src="https://api.dicebear.com/7.x/personas/svg?seed=Felix&backgroundColor=1e293b" alt="Aria"/>
+      <div class="crew-name">Aria Chen</div>
+      <div class="crew-role">Lead Architect</div>
+      <div class="crew-bio">Designs scalable intelligence systems with a focus on cinematic precision and real-time performance.</div>
+      <div class="crew-social">
+        <a href="#" title="LinkedIn">in</a>
+        <a href="#" title="GitHub">⌘</a>
+        <a href="#" title="X">𝕏</a>
+      </div>
+    </div>
+    <div class="crew-card reveal">
+      <img class="crew-avatar" src="https://api.dicebear.com/7.x/personas/svg?seed=Kai&backgroundColor=0f172a" alt="Marcus"/>
+      <div class="crew-name">Marcus Veil</div>
+      <div class="crew-role">Vision Engineer</div>
+      <div class="crew-bio">Specializes in computer vision pipelines and real-time inference optimization for edge deployments.</div>
+      <div class="crew-social">
+        <a href="#" title="LinkedIn">in</a>
+        <a href="#" title="GitHub">⌘</a>
+        <a href="#" title="X">𝕏</a>
+      </div>
+    </div>
+    <div class="crew-card reveal">
+      <img class="crew-avatar" src="https://api.dicebear.com/7.x/personas/svg?seed=Zara&backgroundColor=1e1b4b" alt="Zara"/>
+      <div class="crew-name">Zara Osei</div>
+      <div class="crew-role">Creative Director</div>
+      <div class="crew-bio">Bridges the gap between machine logic and human aesthetics, crafting interfaces that feel alive.</div>
+      <div class="crew-social">
+        <a href="#" title="LinkedIn">in</a>
+        <a href="#" title="GitHub">⌘</a>
+        <a href="#" title="X">𝕏</a>
+      </div>
+    </div>
+    <div class="crew-card reveal">
+      <img class="crew-avatar" src="https://api.dicebear.com/7.x/personas/svg?seed=Niko&backgroundColor=172554" alt="Niko"/>
+      <div class="crew-name">Niko Sato</div>
+      <div class="crew-role">Systems Lead</div>
+      <div class="crew-bio">Oversees infrastructure, automation pipelines, and ensures zero-downtime across all deployments.</div>
+      <div class="crew-social">
+        <a href="#" title="LinkedIn">in</a>
+        <a href="#" title="GitHub">⌘</a>
+        <a href="#" title="X">𝕏</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+   CONTACT SECTION
+═══════════════════════════════════════════════ -->
+<section id="contact">
+  <div class="contact-wrap">
+    <div class="reveal">
+      <p class="section-label">Get in Touch</p>
+      <h2 class="section-title">Let's build<br>something real</h2>
+      <p class="section-sub">Ready to bring intelligence to your vision? Drop us a message and we'll get back within 24 hours.</p>
+
+      <div class="contact-details">
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12v8.5a.5.5 0 01-.5.5h-11a.5.5 0 01-.5-.5V4zm0 0l6 5 6-5" stroke="#3b82f6" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Email</div>
+            <div class="contact-item-value">hello@autoautomation.ai</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="3" stroke="#3b82f6" stroke-width="1.3"/><path d="M8 2C5.24 2 3 4.24 3 7c0 4 5 7 5 7s5-3 5-7c0-2.76-2.24-5-5-5z" stroke="#3b82f6" stroke-width="1.3"/></svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Location</div>
+            <div class="contact-item-value">Nashik, Maharashtra, India</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="3" stroke="#3b82f6" stroke-width="1.3"/><path d="M5 8h6M5 5.5h6M5 10.5h4" stroke="#3b82f6" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <div class="contact-item-label">Response time</div>
+            <div class="contact-item-value">Within 24 hours</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-form reveal" id="contact-form-wrap">
+      <div id="form-fields">
+        <div class="form-row">
+          <div class="form-group" id="fg-name">
+            <label>Full Name</label>
+            <input type="text" id="f-name" placeholder="Varun Patil"/>
+            <div class="form-error">Please enter your name.</div>
+          </div>
+          <div class="form-group" id="fg-email">
+            <label>Email Address</label>
+            <input type="email" id="f-email" placeholder="varun@example.com"/>
+            <div class="form-error">Please enter a valid email.</div>
+          </div>
+        </div>
+        <div class="form-group" id="fg-subject">
+          <label>Subject</label>
+          <input type="text" id="f-subject" placeholder="What's this about?"/>
+          <div class="form-error">Please enter a subject.</div>
+        </div>
+        <div class="form-group" id="fg-message">
+          <label>Message</label>
+          <textarea id="f-message" placeholder="Tell us about your project..."></textarea>
+          <div class="form-error">Please enter your message.</div>
+        </div>
+        <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">
+          Send Message
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="form-success" id="form-success">
+        <div class="form-success-icon">✓</div>
+        <h3 style="font-size:20px;margin-bottom:8px;color:var(--text)">Message Sent!</h3>
+        <p>Thanks for reaching out. We'll get back to you within 24 hours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-top">
+    <div class="logo" style="text-decoration:none;">
+      <div class="logo-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <circle cx="9" cy="9" r="3" fill="#3b82f6"/>
+          <circle cx="9" cy="2" r="1.5" fill="#3b82f6" opacity="0.7"/>
+          <circle cx="9" cy="16" r="1.5" fill="#3b82f6" opacity="0.7"/>
+          <circle cx="2" cy="9" r="1.5" fill="#3b82f6" opacity="0.7"/>
+          <circle cx="16" cy="9" r="1.5" fill="#3b82f6" opacity="0.7"/>
+          <line x1="9" y1="3.5" x2="9" y2="6" stroke="#3b82f6" stroke-width="0.8" opacity="0.5"/>
+          <line x1="9" y1="12" x2="9" y2="14.5" stroke="#3b82f6" stroke-width="0.8" opacity="0.5"/>
+          <line x1="3.5" y1="9" x2="6" y2="9" stroke="#3b82f6" stroke-width="0.8" opacity="0.5"/>
+          <line x1="12" y1="9" x2="14.5" y2="9" stroke="#3b82f6" stroke-width="0.8" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="logo-text">auto-automation</div>
+    </div>
+    <ul class="footer-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#sandbox">Sandbox</a></li>
+      <li><a href="#photos">Photos</a></li>
+      <li><a href="#crew">Crew</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="footer-copy">© 2025 auto-automation. All rights reserved.</div>
+  </div>
+  <p class="ecosystem-label">Auto-Automation Ecosystem</p>
+  <div class="ticker-outer">
+    <div class="ticker-track">
+      <div class="ticker-item"><svg viewBox="0 0 24 24" fill="white"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg><span>Google</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><svg viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg><span>Cust.io</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><svg viewBox="0 0 24 24" fill="white"><path d="M4 4h16v2H4zm0 14h16v2H4zm0-7h7v2H4zm9 0h7v2h-7z"/></svg><span>Hummel</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><svg viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span>Copper</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><svg viewBox="0 0 24 24" fill="white"><path d="M12 2.5C9.5 2.5 7.3 3.6 6 5.5H18c-1.3-1.9-3.5-3-6-3zM4.5 5.5S3 6.5 3 8h18c0-1.5-1.5-2.5-1.5-2.5H4.5zM12 8l-1 13.5 1 .5 1-.5L12 8z"/></svg><span>Tesla</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><svg viewBox="0 0 24 24" fill="white"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg><span>Google</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><svg viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg><span>Cust.io</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><svg viewBox="0 0 24 24" fill="white"><path d="M4 4h16v2H4zm0 14h16v2H4zm0-7h7v2H4zm9 0h7v2h-7z"/></svg><span>Hummel</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><svg viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span>Copper</span></div>
+      <div class="ticker-divider"></div>
+      <div class="ticker-item"><svg viewBox="0 0 24 24" fill="white"><path d="M12 2.5C9.5 2.5 7.3 3.6 6 5.5H18c-1.3-1.9-3.5-3-6-3zM4.5 5.5S3 6.5 3 8h18c0-1.5-1.5-2.5-1.5-2.5H4.5zM12 8l-1 13.5 1 .5 1-.5L12 8z"/></svg><span>Tesla</span></div>
+      <div class="ticker-divider"></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════
+   FEATURE 1: CUSTOM CURSOR
+═══════════════════════════════════════ */
+const dot  = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left  = mx + 'px';
+  dot.style.top   = my + 'px';
+});
+
+function animateRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animateRing);
+}
+animateRing();
+
+document.querySelectorAll('a, button, .gallery-item, .crew-card, .stat-card').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+});
+
+/* ═══════════════════════════════════════
+   FEATURE 2: SCROLL PROGRESS BAR
+═══════════════════════════════════════ */
+const progressBar = document.getElementById('scroll-progress');
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  progressBar.style.width = pct + '%';
+});
+
+/* ═══════════════════════════════════════
+   FEATURE 3: NAVBAR SCROLL EFFECT
+═══════════════════════════════════════ */
+const mainNav = document.getElementById('main-nav');
+window.addEventListener('scroll', () => {
+  mainNav.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+/* ═══════════════════════════════════════
+   FEATURE 4: ACTIVE NAV LINK
+   (Intersection Observer based)
+═══════════════════════════════════════ */
+const sections   = document.querySelectorAll('section[id]');
+const navAnchors = document.querySelectorAll('.nav-links a');
+
+const sectionObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navAnchors.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { threshold: 0.4 });
+
+sections.forEach(s => sectionObserver.observe(s));
+
+/* ═══════════════════════════════════════
+   FEATURE 5: DARK / LIGHT MODE
+═══════════════════════════════════════ */
+const toggle = document.getElementById('theme-toggle');
+toggle.addEventListener('click', () => {
+  const html  = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('lv-theme', isDark ? 'light' : 'dark');
+});
+// Restore saved preference
+const saved = localStorage.getItem('lv-theme');
+if (saved) document.documentElement.setAttribute('data-theme', saved);
+
+/* ═══════════════════════════════════════
+   FEATURE 6: HAMBURGER / MOBILE NAV
+═══════════════════════════════════════ */
+const hamburger   = document.getElementById('hamburger');
+const mobileNav   = document.getElementById('mobile-nav');
+const mobileOver  = document.getElementById('mobile-overlay');
+
+function toggleMenu() {
+  hamburger.classList.toggle('open');
+  mobileNav.classList.toggle('open');
+  mobileOver.classList.toggle('open');
+}
+hamburger.addEventListener('click', toggleMenu);
+mobileOver.addEventListener('click', toggleMenu);
+document.querySelectorAll('.mobile-link').forEach(a => {
+  a.addEventListener('click', toggleMenu);
+});
+
+/* ═══════════════════════════════════════
+   FEATURE 7: VIDEO PLAY / PAUSE
+═══════════════════════════════════════ */
+const video     = document.getElementById('bg-video');
+const playBtn   = document.getElementById('play-btn');
+const playIcon  = document.getElementById('play-icon');
+const pauseIcon = document.getElementById('pause-icon');
+let isPaused = false;
+
+playBtn.addEventListener('click', () => {
+  isPaused = !isPaused;
+  if (isPaused) {
+    video.pause();
+    playIcon.style.display  = 'block';
+    pauseIcon.style.display = 'none';
+  } else {
+    video.play();
+    playIcon.style.display  = 'none';
+    pauseIcon.style.display = 'block';
+  }
+});
+
+// Default: video is playing, show pause icon
+video.addEventListener('play', () => {
+  playIcon.style.display  = 'none';
+  pauseIcon.style.display = 'block';
+});
+
+/* ═══════════════════════════════════════
+   FEATURE 8: SCROLL REVEAL
+   (Intersection Observer)
+═══════════════════════════════════════ */
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 60);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+/* ═══════════════════════════════════════
+   FEATURE 9: LIGHTBOX
+═══════════════════════════════════════ */
+const lightbox  = document.getElementById('lightbox');
+const lbImg     = document.getElementById('lb-img');
+const lbCounter = document.getElementById('lb-counter');
+const galleryItems = document.querySelectorAll('.gallery-item');
+let currentIndex = 0;
+
+const images = Array.from(galleryItems).map(item => ({
+  src:     item.querySelector('img').src,
+  caption: item.querySelector('.gallery-caption').textContent
+}));
+
+function openLightbox(index) {
+  currentIndex = index;
+  lbImg.src = images[index].src;
+  lbCounter.textContent = (index + 1) + ' / ' + images.length;
+  lightbox.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  lightbox.classList.remove('open');
+  document.body.style.overflow = '';
+}
+function prevImage() {
+  currentIndex = (currentIndex - 1 + images.length) % images.length;
+  lbImg.src = images[currentIndex].src;
+  lbCounter.textContent = (currentIndex + 1) + ' / ' + images.length;
+}
+function nextImage() {
+  currentIndex = (currentIndex + 1) % images.length;
+  lbImg.src = images[currentIndex].src;
+  lbCounter.textContent = (currentIndex + 1) + ' / ' + images.length;
+}
+
+galleryItems.forEach((item, i) => item.addEventListener('click', () => openLightbox(i)));
+document.getElementById('lb-close').addEventListener('click', closeLightbox);
+document.getElementById('lb-prev').addEventListener('click', prevImage);
+document.getElementById('lb-next').addEventListener('click', nextImage);
+lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if (!lightbox.classList.contains('open')) return;
+  if (e.key === 'Escape')      closeLightbox();
+  if (e.key === 'ArrowLeft')   prevImage();
+  if (e.key === 'ArrowRight')  nextImage();
+});
+
+/* ═══════════════════════════════════════
+   FEATURE 10: CONTACT FORM VALIDATION
+═══════════════════════════════════════ */
+function handleSubmit() {
+  const name    = document.getElementById('f-name');
+  const email   = document.getElementById('f-email');
+  const subject = document.getElementById('f-subject');
+  const message = document.getElementById('f-message');
+  let valid = true;
+
+  const validate = (input, groupId, fn) => {
+    const ok = fn(input.value.trim());
+    document.getElementById(groupId).classList.toggle('invalid', !ok);
+    if (!ok) valid = false;
+  };
+
+  validate(name,    'fg-name',    v => v.length >= 2);
+  validate(email,   'fg-email',   v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
+  validate(subject, 'fg-subject', v => v.length >= 3);
+  validate(message, 'fg-message', v => v.length >= 10);
+
+  if (!valid) return;
+
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    document.getElementById('form-fields').style.display  = 'none';
+    document.getElementById('form-success').style.display = 'block';
+  }, 1200);
+}
+
+/* ═══════════════════════════════════════
+   FEATURE 11: VISION SANDBOX LOGIC
+═══════════════════════════════════════ */
+const sandboxPresets = {
+  warehouse: {
+    name: "Logistics Warehouse",
+    image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&q=80",
+    latency: "12ms",
+    model: "Lumina-X Core v4.1",
+    detections: [
+      { class: "worker", confidence: 0.96, x: 22, y: 15, w: 18, h: 55, color: "#3b82f6" },
+      { class: "forklift", confidence: 0.89, x: 45, y: 40, w: 35, h: 48, color: "#a855f7" },
+      { class: "package", confidence: 0.76, x: 12, y: 65, w: 14, h: 18, color: "#ec4899" },
+      { class: "pallet", confidence: 0.62, x: 80, y: 70, w: 16, h: 22, color: "#f8a170" }
+    ]
+  },
+  traffic: {
+    name: "Smart City Traffic",
+    image: "smart_city_traffic.png",
+    latency: "8ms",
+    model: "Lumina-Traffic Edge v3.0",
+    detections: [
+      { class: "bus", confidence: 0.94, x: 8, y: 30, w: 42, h: 50, color: "#ec4899" },
+      { class: "car", confidence: 0.88, x: 55, y: 55, w: 22, h: 25, color: "#3b82f6" },
+      { class: "pedestrian", confidence: 0.74, x: 82, y: 45, w: 6, h: 25, color: "#22c55e" },
+      { class: "light", confidence: 0.91, x: 72, y: 12, w: 5, h: 18, color: "#eab308" },
+      { class: "cyclist", confidence: 0.58, x: 48, y: 72, w: 10, h: 20, color: "#f8a170" }
+    ]
+  },
+  industrial: {
+    name: "Assembly Quality",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&q=80",
+    latency: "15ms",
+    model: "Lumina-QC Ultra v5.2",
+    detections: [
+      { class: "arm", confidence: 0.98, x: 5, y: 5, w: 45, h: 80, color: "#3b82f6" },
+      { class: "pcb", confidence: 0.93, x: 48, y: 35, w: 48, h: 55, color: "#22c55e" },
+      { class: "solder_defect", confidence: 0.72, x: 62, y: 58, w: 8, h: 8, color: "#ef4444" },
+      { class: "ic_chip", confidence: 0.89, x: 78, y: 42, w: 12, h: 14, color: "#a855f7" }
+    ]
+  }
+};
+
+let currentPreset = 'warehouse';
+let isScanning = false;
+let hasScanCompleted = false;
+let confidenceThreshold = 0.50;
+let scanTimeout;
+let streamInterval;
+
+function initSandbox() {
+  const presetButtons = document.querySelectorAll('.feed-btn');
+  const sandboxImg = document.getElementById('sandbox-image');
+  const slider = document.getElementById('threshold-slider');
+  const thresholdVal = document.getElementById('threshold-val');
+  
+  presetButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (isScanning) return;
+      
+      presetButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      currentPreset = btn.getAttribute('data-preset');
+      const preset = sandboxPresets[currentPreset];
+      
+      sandboxImg.src = preset.image;
+      sandboxImg.alt = preset.name;
+      
+      resetSandbox();
+    });
+  });
+  
+  slider.addEventListener('input', (e) => {
+    const val = parseFloat(e.target.value).toFixed(2);
+    thresholdVal.textContent = val;
+    confidenceThreshold = parseFloat(val);
+    
+    if (hasScanCompleted) {
+      renderDetections();
+      updateTelemetryConsole();
+    }
+  });
+  
+  document.getElementById('toggle-boxes').addEventListener('change', renderDetections);
+  document.getElementById('toggle-labels').addEventListener('change', renderDetections);
+  document.getElementById('toggle-heatmap').addEventListener('change', (e) => {
+    document.getElementById('heatmap-overlay').classList.toggle('active', e.target.checked);
+  });
+  
+  document.getElementById('btn-scan').addEventListener('click', runInference);
+  document.getElementById('btn-reset').addEventListener('click', resetSandbox);
+  
+  // Set initial state
+  resetSandbox();
+}
+
+function runInference() {
+  if (isScanning) return;
+  
+  isScanning = true;
+  hasScanCompleted = false;
+  
+  const btnScan = document.getElementById('btn-scan');
+  const btnReset = document.getElementById('btn-reset');
+  const laser = document.getElementById('scan-laser');
+  const hudStatus = document.getElementById('hud-status');
+  const hudLatency = document.getElementById('hud-latency');
+  const jsonOutput = document.getElementById('json-output');
+  const consoleDot = document.getElementById('console-status-dot');
+  
+  btnScan.disabled = true;
+  btnReset.disabled = true;
+  
+  hudStatus.textContent = "SCANNING...";
+  hudLatency.textContent = "LATENCY: --";
+  hudLatency.style.color = '#ef4444';
+  
+  laser.classList.remove('scanning');
+  void laser.offsetWidth; // trigger reflow
+  laser.classList.add('scanning');
+  
+  document.getElementById('overlay-container').innerHTML = '';
+  consoleDot.className = 'console-dot';
+  consoleDot.style.background = '#eab308';
+  consoleDot.style.boxShadow = '0 0 8px #eab308';
+  
+  const logs = [
+    "[INFO] Initializing Lumina Vision pipeline...",
+    `[INFO] Target model: ${sandboxPresets[currentPreset].model}`,
+    "[INFO] Loading network weights...",
+    "[INFO] Frame resolution detected: 1920x1080px",
+    "[INFO] Performing forward pass on tensor GPU/NPU...",
+    "[SUCCESS] Target classes mapped, generating labels..."
+  ];
+  
+  let logIdx = 0;
+  jsonOutput.innerHTML = logs[0];
+  
+  streamInterval = setInterval(() => {
+    logIdx++;
+    if (logIdx < logs.length) {
+      jsonOutput.innerHTML += "\n" + logs[logIdx];
+    } else {
+      clearInterval(streamInterval);
+    }
+  }, 250);
+  
+  scanTimeout = setTimeout(() => {
+    isScanning = false;
+    hasScanCompleted = true;
+    
+    btnScan.disabled = false;
+    btnReset.disabled = false;
+    
+    laser.classList.remove('scanning');
+    
+    hudStatus.textContent = "COMPLETED";
+    hudLatency.textContent = `LATENCY: ${sandboxPresets[currentPreset].latency}`;
+    hudLatency.style.color = '#22c55e';
+    
+    consoleDot.className = 'console-dot green';
+    consoleDot.style.background = '';
+    consoleDot.style.boxShadow = '';
+    
+    renderDetections();
+    updateTelemetryConsole();
+  }, 1800);
+}
+
+function renderDetections() {
+  const container = document.getElementById('overlay-container');
+  container.innerHTML = '';
+  
+  if (!hasScanCompleted) return;
+  
+  const preset = sandboxPresets[currentPreset];
+  const threshold = confidenceThreshold;
+  
+  const showBoxes = document.getElementById('toggle-boxes').checked;
+  const showLabels = document.getElementById('toggle-labels').checked;
+  
+  let detectedCount = 0;
+  let confidenceSum = 0;
+  
+  preset.detections.forEach(det => {
+    if (det.confidence >= threshold) {
+      detectedCount++;
+      confidenceSum += det.confidence;
+      
+      const box = document.createElement('div');
+      box.className = 'bbox';
+      box.style.left = det.x + '%';
+      box.style.top = det.y + '%';
+      box.style.width = det.w + '%';
+      box.style.height = det.h + '%';
+      box.style.borderColor = det.color;
+      box.style.boxShadow = `0 0 8px ${det.color}66`;
+      
+      if (!showBoxes) {
+        box.style.borderWidth = '0';
+        box.style.boxShadow = 'none';
+      }
+      
+      if (showLabels) {
+        const label = document.createElement('div');
+        label.className = 'bbox-label';
+        label.style.backgroundColor = det.color;
+        label.textContent = `${det.class} (${Math.round(det.confidence * 100)}%)`;
+        box.appendChild(label);
+      }
+      
+      container.appendChild(box);
+      setTimeout(() => box.classList.add('visible'), 50);
+    }
+  });
+  
+  document.getElementById('stat-count').textContent = detectedCount;
+  if (detectedCount > 0) {
+    const meanConf = Math.round((confidenceSum / detectedCount) * 100);
+    document.getElementById('stat-accuracy').textContent = meanConf + '%';
+  } else {
+    document.getElementById('stat-accuracy').textContent = '--';
+  }
+}
+
+function updateTelemetryConsole() {
+  if (!hasScanCompleted) return;
+  const preset = sandboxPresets[currentPreset];
+  const filteredDetections = preset.detections.filter(d => d.confidence >= confidenceThreshold);
+  
+  const output = {
+    status: "inference_completed",
+    pipeline: preset.model,
+    resolution: "1920x1080",
+    latency_ms: parseInt(preset.latency),
+    active_edge_node: "node_eu_west_42",
+    confidence_cutoff: confidenceThreshold,
+    detections: filteredDetections.map(d => ({
+      class: d.class,
+      confidence: d.confidence,
+      bbox_pct: [d.x, d.y, d.w, d.h]
+    }))
+  };
+  
+  const codeContainer = document.getElementById('json-output');
+  const jsonStr = JSON.stringify(output, null, 2);
+  codeContainer.innerHTML = highlightJSON(jsonStr);
+}
+
+function highlightJSON(json) {
+  json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, function (match) {
+    let cls = 'number';
+    if (/^"/.test(match)) {
+      if (/:$/.test(match)) {
+        cls = 'key';
+      } else {
+        cls = 'string';
+      }
+    } else if (/true|false/.test(match)) {
+      cls = 'boolean';
+    } else if (/null/.test(match)) {
+      cls = 'null';
+    }
+    
+    let color = "#38bdf8"; // default blue
+    if (cls === 'key') color = "#f43f5e"; // rose/pink
+    else if (cls === 'string') color = "#34d399"; // green
+    else if (cls === 'number') color = "#fbbf24"; // yellow/orange
+    else if (cls === 'boolean') color = "#a78bfa"; // purple
+    
+    return '<span style="color:' + color + '">' + match + '</span>';
+  });
+}
+
+function resetSandbox() {
+  if (isScanning) return;
+  
+  hasScanCompleted = false;
+  
+  clearTimeout(scanTimeout);
+  clearInterval(streamInterval);
+  
+  const btnScan = document.getElementById('btn-scan');
+  const btnReset = document.getElementById('btn-reset');
+  const laser = document.getElementById('scan-laser');
+  const hudStatus = document.getElementById('hud-status');
+  const hudLatency = document.getElementById('hud-latency');
+  const jsonOutput = document.getElementById('json-output');
+  const consoleDot = document.getElementById('console-status-dot');
+  
+  btnScan.disabled = false;
+  btnReset.disabled = true;
+  
+  laser.classList.remove('scanning');
+  hudStatus.textContent = "STANDBY";
+  hudLatency.textContent = "LATENCY: --";
+  hudLatency.style.color = '';
+  
+  consoleDot.className = 'console-dot';
+  consoleDot.style.background = '';
+  consoleDot.style.boxShadow = '';
+  
+  document.getElementById('overlay-container').innerHTML = '';
+  jsonOutput.innerHTML = '// Click "Run Inference" to analyze the selected feed...';
+  
+  document.getElementById('stat-count').textContent = '0';
+  document.getElementById('stat-accuracy').textContent = '--';
+}
+
+/* ═══════════════════════════════════════
+   PREMIUM EDGE NETWORK SIMULATOR
+═══════════════════════════════════════ */
+function initNetworkSimulator() {
+  const btnPing = document.getElementById('btn-ping-network');
+  if (!btnPing) return;
+
+  const nodeCards = document.querySelectorAll('.node-card');
+  const avgLatencyVal = document.getElementById('net-avg-latency');
+  const throughputVal = document.getElementById('net-throughput');
+  const activeConnVal = document.getElementById('net-active-conn');
+  const statusText = document.getElementById('nodes-status-text');
+
+  let pingingInProgress = false;
+
+  btnPing.addEventListener('click', () => {
+    if (pingingInProgress) return;
+    pingingInProgress = true;
+    btnPing.disabled = true;
+    
+    // Set status to PINGING
+    statusText.textContent = "PINGING NODES...";
+    statusText.style.color = "var(--yellow)";
+    
+    // Animate throughput and connection fluctuation
+    let currentConn = parseInt(activeConnVal.textContent.replace(/,/g, ''));
+    let targetConn = currentConn + Math.floor((Math.random() - 0.5) * 20000);
+    
+    // Cascading Node Scan
+    nodeCards.forEach((card, index) => {
+      const statusDot = card.querySelector('.node-status-dot');
+      const statusLabel = card.querySelector('.node-status-label');
+      const latencyVal = card.querySelector('.node-meta-val.latency');
+      const bwVal = card.querySelector(`#node-${card.getAttribute('data-node')}-bw`);
+      const loadVal = card.querySelector(`#node-${card.getAttribute('data-node')}-load`);
+      
+      // Delay each card's ping animation for a sweeping cascade effect
+      setTimeout(() => {
+        statusDot.classList.add('pinging');
+        statusLabel.textContent = "PINGING...";
+        statusLabel.style.color = "var(--yellow)";
+        latencyVal.textContent = "--";
+        
+        setTimeout(() => {
+          // Generate new randomized metrics
+          const newPing = Math.floor(Math.random() * 12) + 6; // 6ms to 18ms
+          const newLoad = Math.floor(Math.random() * 45) + 25; // 25% to 70%
+          const newBw = (Math.random() * 120 + 100).toFixed(1); // 100 to 220 GB/s
+          
+          latencyVal.textContent = `${newPing} ms`;
+          latencyVal.className = 'node-meta-val latency';
+          if (newPing > 15) {
+            latencyVal.classList.add('high');
+          }
+          
+          loadVal.textContent = `${newLoad}%`;
+          bwVal.textContent = `${newBw} GB/s`;
+          
+          statusDot.classList.remove('pinging');
+          statusLabel.textContent = "ONLINE";
+          statusLabel.style.color = "";
+          
+          // Check if this was the last node to complete
+          if (index === nodeCards.length - 1) {
+            pingingInProgress = false;
+            btnPing.disabled = false;
+            statusText.textContent = "OPERATIONAL";
+            statusText.style.color = "#22c55e";
+            
+            // Calculate and display new average latency
+            let totalLatency = 0;
+            document.querySelectorAll('.node-meta-val.latency').forEach(el => {
+              totalLatency += parseInt(el.textContent);
+            });
+            const avg = (totalLatency / nodeCards.length).toFixed(1);
+            avgLatencyVal.textContent = `${avg} ms`;
+            
+            // Recalculate global throughput
+            let totalBw = 0;
+            nodeCards.forEach(c => {
+              const nodeNameAttr = c.getAttribute('data-node');
+              totalBw += parseFloat(document.getElementById(`node-${nodeNameAttr}-bw`).textContent);
+            });
+            throughputVal.textContent = `${totalBw.toFixed(1)} GB/s`;
+            
+            // Animate connections count smoothly
+            animateNumber(activeConnVal, currentConn, targetConn, 1000);
+          }
+        }, 1200); // Node response simulated duration
+      }, index * 200); // 200ms stagger between nodes
+    });
+  });
+}
+
+function animateNumber(element, start, end, duration) {
+  let startTimestamp = null;
+  const step = (timestamp) => {
+    if (!startTimestamp) startTimestamp = timestamp;
+    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+    const value = Math.floor(progress * (end - start) + start);
+    element.textContent = value.toLocaleString();
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    }
+  };
+  window.requestAnimationFrame(step);
+}
+
+/* ═══════════════════════════════════════
+   PREMIUM PRICING TOGGLE SWITCH
+═══════════════════════════════════════ */
+function initPricingPlans() {
+  const toggleSwitch = document.getElementById('pricing-toggle-switch');
+  const labelMonthly = document.getElementById('billing-monthly');
+  const labelYearly = document.getElementById('billing-yearly');
+  
+  const priceLite = document.getElementById('price-lite');
+  const priceUnlimited = document.getElementById('price-unlimited');
+  const priceEnterprise = document.getElementById('price-enterprise');
+  
+  const periodLite = document.getElementById('period-lite');
+  const periodUnlimited = document.getElementById('period-unlimited');
+  const periodEnterprise = document.getElementById('period-enterprise');
+
+  if (!toggleSwitch) return;
+
+  let isYearly = false;
+
+  function updatePricing(yearly) {
+    if (isYearly === yearly) return;
+    isYearly = yearly;
+    
+    // Toggle active classes
+    toggleSwitch.classList.toggle('active', isYearly);
+    labelMonthly.classList.toggle('active', !isYearly);
+    labelYearly.classList.toggle('active', isYearly);
+    
+    if (isYearly) {
+      // Annual prices (Save 25% approx)
+      animatePrice(priceLite, 15);
+      animatePrice(priceUnlimited, 59);
+      periodLite.textContent = '/mo, billed annually';
+      periodUnlimited.textContent = '/mo, billed annually';
+    } else {
+      // Monthly prices
+      animatePrice(priceLite, 19);
+      animatePrice(priceUnlimited, 79);
+      periodLite.textContent = '/mo';
+      periodUnlimited.textContent = '/mo';
+    }
+  }
+
+  function animatePrice(element, targetPrice) {
+    // Elegant fade out, change price, fade in transition
+    element.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
+    element.style.opacity = '0';
+    element.style.transform = 'translateY(-5px)';
+    
+    setTimeout(() => {
+      element.textContent = `$${targetPrice}`;
+      element.style.opacity = '1';
+      element.style.transform = 'translateY(0)';
+    }, 150);
+  }
+
+  toggleSwitch.addEventListener('click', () => updatePricing(!isYearly));
+  labelMonthly.addEventListener('click', () => updatePricing(false));
+  labelYearly.addEventListener('click', () => updatePricing(true));
+}
+
+/* ═══════════════════════════════════════
+   PREMIUM FAQ ACCORDION
+═══════════════════════════════════════ */
+function initFAQAccordion() {
+  const faqHeaders = document.querySelectorAll('.faq-header');
+  
+  faqHeaders.forEach(header => {
+    header.addEventListener('click', () => {
+      const item = header.closest('.faq-item');
+      const body = item.querySelector('.faq-body');
+      const isActive = item.classList.contains('active');
+      
+      // Close all other FAQ items for a neat accordion behavior
+      document.querySelectorAll('.faq-item').forEach(otherItem => {
+        if (otherItem !== item) {
+          otherItem.classList.remove('active');
+          otherItem.querySelector('.faq-body').style.maxHeight = '0';
+        }
+      });
+      
+      // Toggle current item
+      if (isActive) {
+        item.classList.remove('active');
+        body.style.maxHeight = '0';
+      } else {
+        item.classList.add('active');
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+  });
+}
+
+// Initialize the sandbox demo
+initNetworkSimulator();
+initPricingPlans();
+initFAQAccordion();
+initSandbox();
+</script>
+</body>
+</html>
