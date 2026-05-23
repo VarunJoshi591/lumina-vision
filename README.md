@@ -4,9 +4,11 @@
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Stage: Production SaaS](https://img.shields.io/badge/Stage-SaaS%20Ready-purple.svg)]()
+[![Stage: Live Demo](https://img.shields.io/badge/Demo-Live%20Preview-brightgreen.svg)](https://varunjoshi591.github.io/lumina-vision/)
 
 **Lumina Vision** is an ultra-premium, cinematic landing page and interactive sandbox built for modern AI visual intelligence platforms. It features high-fidelity visual telemetry simulation, real-time client-side interactive configurations, and premium SaaS-level user journeys.
+
+🔗 **Live Demo:** [Interact with Lumina Vision Live](https://varunjoshi591.github.io/lumina-vision/)
 
 Designed to impress at first glance, the site leverages cutting-edge web aesthetics including fluid glassmorphism, responsive grid layouts, and custom-tailored micro-animations.
 
@@ -81,6 +83,7 @@ lumina-vision/
 ├── index.html              # Core application code (HTML, CSS variables, & Javascript logic)
 ├── smart_city_traffic.png  # High-fidelity traffic telemetry visual asset
 ├── .gitignore              # Git ignore rules
+├── LICENSE                 # MIT Open Source License details
 └── README.md               # Project documentation (this file)
 ```
 
